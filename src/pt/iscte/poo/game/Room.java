@@ -8,6 +8,7 @@ import objects.Baba;
 import objects.Dirt;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
+import objects.*;
 
 public class Room {
 

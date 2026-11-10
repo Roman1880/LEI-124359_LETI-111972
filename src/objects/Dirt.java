@@ -3,26 +3,24 @@ package objects;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 
-public class Dirt implements ImageTile {
+/**
+ * Representa o chao do nivel (Dirt).
+ */
+public class Dirt extends GameObject {
 
-    private Point2D position;
+    /**
+     * Construtor do chao.
+     *
+     * @param position Posicao na grelha
+     */
 
     public Dirt(Point2D position) {
-        this.position = position;
+        super(position, "dirt", 5);
     }
 
     @Override
-    public String getName() {
-        return "dirt";
+    public boolean isTransposable() {
+        return true;
     }
 
-    @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
-    @Override
-    public int getLayer() {
-        return 5;
-    }
 }
