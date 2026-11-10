@@ -1,0 +1,13 @@
+==================================================
+DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL (IA)
+==================================================
+
+1. Ferramenta(s) utilizada(s):
+   - Gemini
+
+2. Finalidade do uso:
+   - Esclarecimento de duvidas sobre os requisitos do projeto e especificacoes dos Checkpoints.
+   - Geracao de modelos de comentarios JavaDoc sem caracteres especiais.
+
+3. Elementos do codigo / seccoes onde foi utilizada:
+   - Documentacao e comentarios JavaDoc dos metodos no pacote objects.
