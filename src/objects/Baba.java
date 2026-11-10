@@ -6,32 +6,30 @@ import pt.iscte.poo.utils.Point2D;
 
 import java.util.Random;
 
-public class Baba implements ImageTile {
+/**
+ * Representa a personagem principal (Baba).
+ */
+public class Baba extends GameObject{
 
-    private Point2D position;
-    private String direction = "r";
+    /**
+     * Construtor da Baba.
+     *
+     * @param position Posicao inicial na grelha
+     */
 
     public Baba(Point2D position) {
-        this.position = position;
+        super(position, "baba", 25);
     }
 
-    @Override
-    public String getName() {
-        return "baba-" + direction;
-    }
-
-    @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
-    @Override
-    public int getLayer() {
-        return 25;
-    }
+    /**
+     * Move a personagem na direcao especificada e atualiza a imagem.
+     *
+     * @param d Direcao do movimento (UP, DOWN, LEFT, RIGHT)
+     */
 
     public void move(Direction d) {
-        Random rand = new Random();
-        position = new Point2D(rand.nextInt(10), rand.nextInt(10));
+        Point2D new_pos = getPosition().plus(d.asVector());
+        setPosition(new_pos);
+        setName("baba-" + d.name().toLowerCase().charAt(0));
     }
 }
