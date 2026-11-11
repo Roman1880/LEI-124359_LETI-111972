@@ -19,7 +19,7 @@ Este projeto consiste numa adaptação do jogo **"Baba Is You"**. O objetivo des
 
 Abaixo é apresentado o diagrama de classes UML que descreve a estrutura e as relações entre os principais componentes do projeto nesta etapa:
 
-![Diagrama de Classes UML](./UML_Checkpoint1.png)
+![Diagrama de Classes UML]([./UML_Checkpoint1.png](https://github.com/Roman1880/LEI-124359_LETI-111972/blob/master/POO_UML_1CheckPoint.png))
 
 ### Principais Blocos da Arquitetura:
 - **`ImageTile`** (`pt.iscte.poo.gui`): Interface para a representação gráfica dos objetos no tabuleiro do jogo[cite: 5].
@@ -36,4 +36,4 @@ Abaixo é apresentado o diagrama de classes UML que descreve a estrutura e as re
 
 - **Linguagem de Programação:** Java
 - **Paradigma:** Programação Orientada aos Objetos (POO)
-- **Ferramenta de Modelação UML:** draw.io / PlantText
+- **Ferramenta de Modelação UML:** draw.io
