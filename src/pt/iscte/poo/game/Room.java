@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import objects.Baba;
-import objects.Dirt;
 import pt.iscte.poo.gui.ImageTile;
-import pt.iscte.poo.utils.Point2D;
-import objects.*;
 
 public class Room {
 
@@ -40,17 +37,17 @@ public class Room {
         Room r = new Room();
         r.setName(f.getName());
 
-        for (int i = 0; i <= 10; i++) {
-            ImageTile dirt = new Dirt(new Point2D(i, i));
-            r.addObject(dirt);
-            ImageTile dirt2 = new Dirt(new Point2D(10 - i, i));
-            r.addObject(dirt2);
+        // 1. Usar o RoomLoader para ler o ficheiro .txt correspondente (ex: room0.txt)
+        List<ImageTile> tiles = RoomLoader.loadRoom(f.getName());
+
+        // 2. Adicionar os tiles à sala e detetar onde está o Baba para o definir como player
+        for (ImageTile tile : tiles) {
+            r.addObject(tile);
+            if (tile instanceof Baba) {
+                r.player = (Baba) tile;
+            }
         }
 
-        Baba baba = new Baba(new Point2D(5, 5));
-        r.addObject(baba);
-
-        r.player = baba;
         return r;
     }
 
