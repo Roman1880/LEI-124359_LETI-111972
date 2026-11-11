@@ -1,39 +1,39 @@
-# Baba Is You — POO Project (CheckPoint 1)
+# Baba Is You — Projeto POO (CheckPoint 1)
 
-Проект розроблено в рамках курсу **Programação Orientada aos Objetos (POO)**.
+Este projeto foi desenvolvido no âmbito da unidade curricular de **Programação Orientada aos Objetos (POO)**.
 
-## 👥 Автори / Автори проекту
+## 👥 Autores
 
-* **Roman Havrylenko** — Número: `124359`
-* **Carmindo de Severino Delvan** — Número: `111972`
-
----
-
-## 📌 Опис проекту
-
-Цей проект є адаптацією відомої об'єктно-орієнтованої гри **"Baba Is You"**. Метою першого етапу (CheckPoint 1) є створення базової архітектури класів, визначення ієрархії об'єктів гри та налаштування взаємодії з графічним рушієм.
+- **Roman Havrylenko** — Número: `124359`
+- **Carmindo de Severino Delvan** — Número: `111972`
 
 ---
 
-## 📐 UML Клас-Діаграма (CheckPoint 1)
+## 📌 Descrição do Projeto
 
-Нижче представлена UML-діаграма класів, яка описує структуру та зв'язки між основними компонентами проекту на даному етапі:
-
-![UML Class Diagram](./UML_Checkpoint1.png)
-
-### Основні блоки архітектури:
-* **`ImageTile`** (`pt.iscte.poo.gui`): Інтерфейс для графічного відображення об'єктів на ігровому полі.
-* **`GameObject`** (`objects`): Абстрактний базовий клас для всіх сутностей у грі (позиція, шар відображення, ім'я).
-* **Сутності гри** (`objects`): 
-  * `Baba` — головний персонаж з можливістю переміщення (`move`).
-  * `Dirt`, `Wall`, `CrackedWall` — ігрові перешкоди та елементи оточення.
-* **`GameEngine`** (`pt.iscte.poo.game`): Синглтон (`Singleton`), що керує ігровим циклом та оновленням стану.
-* **`Point2D` & `Direction`** (`pt.iscte.poo.utils`): Допоміжні класи для роботи з координатами та напрямками руху.
+Este projeto consiste numa adaptação do jogo **"Baba Is You"**. O objetivo desta primeira fase (CheckPoint 1) é a criação da arquitetura base de classes, a definição da hierarquia dos objetos do jogo e a configuração da interação com o motor gráfico.
 
 ---
 
-## 🛠 Технології
+## 📐 Diagrama de Classes UML (CheckPoint 1)
 
-* **Мова програмування:** Java
-* **Парадигма:** Об'єктно-орієнтоване програмування (ООП)
-* **Інструмент проектування UML:** draw.io / PlantText
+Abaixo é apresentado o diagrama de classes UML que descreve a estrutura e as relações entre os principais componentes do projeto nesta etapa:
+
+![Diagrama de Classes UML](./UML_Checkpoint1.png)
+
+### Principais Blocos da Arquitetura:
+- **`ImageTile`** (`pt.iscte.poo.gui`): Interface para a representação gráfica dos objetos no tabuleiro do jogo[cite: 5].
+- **`GameObject`** (`objects`): Classe abstrata base para todas as entidades do jogo (posição, camada de visualização, nome)[cite: 2, 6].
+- **Entidades do Jogo** (`objects`): 
+  - `Baba` — personagem principal com funcionalidade de movimento (`move`)[cite: 2, 6].
+  - `Dirt`, `Wall`, `CrackedWall` — obstáculos e elementos do ambiente[cite: 2, 6].
+- **`GameEngine`** (`pt.iscte.poo.game`): *Singleton* que gere o ciclo do jogo e a atualização do estado[cite: 6].
+- **`Point2D` & `Direction`** (`pt.iscte.poo.utils`): Classes auxiliares para manipulação de coordenadas e direções[cite: 6].
+
+---
+
+## 🛠 Tecnologias
+
+- **Linguagem de Programação:** Java
+- **Paradigma:** Programação Orientada aos Objetos (POO)
+- **Ferramenta de Modelação UML:** draw.io / PlantText
