@@ -4,21 +4,18 @@ import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
-import java.util.Random;
-
 /**
  * Representa a personagem principal (Baba).
  */
-public class Baba extends GameObject{
+public class Baba extends GameObject {
 
     /**
      * Construtor da Baba.
      *
      * @param position Posicao inicial na grelha
      */
-
     public Baba(Point2D position) {
-        super(position, "baba", 25);
+        super(position, "baba-d", 25);
     }
 
     /**
@@ -26,7 +23,6 @@ public class Baba extends GameObject{
      *
      * @param d Direcao do movimento (UP, DOWN, LEFT, RIGHT)
      */
-
     public void move(Direction d) {
         Point2D new_pos = getPosition().plus(d.asVector());
         setPosition(new_pos);
