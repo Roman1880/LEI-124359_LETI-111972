@@ -1,14 +1,33 @@
 package pt.iscte.poo.game;
+
 import objects.*;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.gui.ImageTile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public class RoomLoader {
+
+    // 1. Mapa de fábricas para os caracteres da grelha (Substitui o switch de carateres)
+    private static final Map<Character, Function<Point2D, ImageTile>> TILE_FACTORIES = new HashMap<>();
+
+    // 2. Mapa de fábricas para as entidades do nível (Substitui o switch de entidades)
+    private static final Map<String, Function<Point2D, ImageTile>> ENTITY_FACTORIES = new HashMap<>();
+
+    static {
+        // Inicializar o mapa da grelha (Módulo de Coleções - Map)
+        TILE_FACTORIES.put('X', Wall::new);
+        TILE_FACTORIES.put('x', CrackedWall::new);
+
+        // Inicializar o mapa de entidades
+        ENTITY_FACTORIES.put("baba", Baba::new);
+    }
 
     public static List<ImageTile> loadRoom(String roomFileName) {
         List<ImageTile> tiles = new ArrayList<>();
@@ -17,8 +36,8 @@ public class RoomLoader {
         try (Scanner scanner = new Scanner(file)) {
             if (!scanner.hasNextLine()) return tiles;
 
-            // 1. Ler a linha de dimensões (ex: 21,15)
-            String dimensions = scanner.nextLine();
+            // Ler a linha de dimensões (ex: 21,15)
+            scanner.nextLine();
 
             int y = 0;
             boolean readingGrid = true;
@@ -26,7 +45,6 @@ public class RoomLoader {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
-                // Se a linha tiver vírgulas, passamos para a secção de entidades (ex: baba,2,3,r)
                 if (line.contains(",")) {
                     readingGrid = false;
                     processEntity(line, tiles);
@@ -34,31 +52,18 @@ public class RoomLoader {
                 }
 
                 if (readingGrid) {
-                    // 2. Processar a grelha de carateres do mapa (X, x, g, etc.)
+                    // Processar a grelha usando o Map de Coleções em vez de switch
                     for (int x = 0; x < line.length(); x++) {
                         char c = line.charAt(x);
                         Point2D position = new Point2D(x, y);
 
-                        switch (c) {
-                            case 'X': // Parede principal
-                                tiles.add(new Wall(position));
-                                break;
-                            case 'x': // Parede rachada
-                                tiles.add(new CrackedWall(position));
-                                break;
-                            case 'g': // Terra / Chão
-                                tiles.add(new Grass(position));
-                                break;
-                            case ' ':
-                                // Espaço vazio, não adiciona tile
-                                break;
-                            default:
-                                break;
+                        Function<Point2D, ImageTile> factory = TILE_FACTORIES.get(c);
+                        if (factory != null) {
+                            tiles.add(factory.apply(position));
                         }
                     }
                     y++;
                 } else {
-                    // 3. Processar linhas de entidades adicionais
                     processEntity(line, tiles);
                 }
             }
@@ -78,12 +83,10 @@ public class RoomLoader {
         int y = Integer.parseInt(parts[2].trim());
         Point2D position = new Point2D(x, y);
 
-        // Instanciação alinhada com o UML do Checkpoint 1
-        switch (type) {
-            case "baba":
-                tiles.add(new Baba(position));
-                break;
-            // Outras entidades podem ser adicionadas aqui à medida que avançarmos
+        // Processar entidades usando o Map de Coleções em vez de switch
+        Function<Point2D, ImageTile> factory = ENTITY_FACTORIES.get(type);
+        if (factory != null) {
+            tiles.add(factory.apply(position));
         }
     }
 }
