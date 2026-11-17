@@ -24,11 +24,9 @@ public class RoomLoader {
         // Inicializar o mapa da grelha (Módulo de Coleções - Map)
         TILE_FACTORIES.put('X', Wall::new);
         TILE_FACTORIES.put('x', CrackedWall::new);
-        // O 'g' (erva) e o espaço ' ' não criam tiles independentes na grelha para respeitar as indicações do docente
 
-        // Inicializar o mapa de entidades (quando surgirem novas, basta adicioná-las aqui!)
+        // Inicializar o mapa de entidades
         ENTITY_FACTORIES.put("baba", Baba::new);
-        // Exemplo para o futuro: ENTITY_FACTORIES.put("rock", Rock::new);
     }
 
     public static List<ImageTile> loadRoom(String roomFileName) {
@@ -90,8 +88,5 @@ public class RoomLoader {
         if (factory != null) {
             tiles.add(factory.apply(position));
         }
-
-        // Nota: Se a entidade precisar da direção (como o baba com 'r'),
-        // podemos tratar essa especificidade logo abaixo se a classe aceitar a direção no construtor.
     }
 }

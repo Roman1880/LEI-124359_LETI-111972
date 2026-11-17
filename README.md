@@ -22,13 +22,13 @@ Abaixo é apresentado o diagrama de classes UML que descreve a estrutura e as re
 ![Diagrama de Classes UML](./POO_UML_1CheckPoint.png)
 
 ### Principais Blocos da Arquitetura:
-- **`ImageTile`** (`pt.iscte.poo.gui`): Interface para a representação gráfica dos objetos no tabuleiro do jogo[cite: 5].
-- **`GameObject`** (`objects`): Classe abstrata base para todas as entidades do jogo (posição, camada de visualização, nome)[cite: 2, 6].
+- **`ImageTile`** (`pt.iscte.poo.gui`): Interface para a representação gráfica dos objetos no tabuleiro do jogo.
+- **`GameObject`** (`objects`): Classe abstrata base para todas as entidades do jogo (posição, camada de visualização, nome).
 - **Entidades do Jogo** (`objects`): 
-  - `Baba` — personagem principal com funcionalidade de movimento (`move`)[cite: 2, 6].
-  - `Dirt`, `Wall`, `CrackedWall` — obstáculos e elementos do ambiente[cite: 2, 6].
-- **`GameEngine`** (`pt.iscte.poo.game`): *Singleton* que gere o ciclo do jogo e a atualização do estado[cite: 6].
-- **`Point2D` & `Direction`** (`pt.iscte.poo.utils`): Classes auxiliares para manipulação de coordenadas e direções[cite: 6].
+  - `Baba` — personagem principal com funcionalidade de movimento (`move`).
+  - `Dirt`, `Wall`, `CrackedWall`, `Grass` — obstáculos e elementos do ambiente.
+- **`GameEngine`** (`pt.iscte.poo.game`): *Singleton* que gere o ciclo do jogo e a atualização do estado.
+- **`Point2D` & `Direction`** (`pt.iscte.poo.utils`): Classes auxiliares para manipulação de coordenadas e direções.
 
 ---
 

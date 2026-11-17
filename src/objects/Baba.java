@@ -1,5 +1,6 @@
 package objects;
 
+import pt.iscte.poo.game.GameEngine;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
@@ -25,7 +26,9 @@ public class Baba extends GameObject {
      */
     public void move(Direction d) {
         Point2D new_pos = getPosition().plus(d.asVector());
-        setPosition(new_pos);
-        setName("baba-" + d.name().toLowerCase().charAt(0));
+        if (GameEngine.getInstance().canMoveTo(new_pos)) {
+            setPosition(new_pos);
+            setName("baba-" + d.name().toLowerCase().charAt(0));
+        }
     }
 }

@@ -8,6 +8,7 @@ import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.observer.Observed;
 import pt.iscte.poo.observer.Observer;
 import pt.iscte.poo.utils.Direction;
+import pt.iscte.poo.utils.Point2D;
 
 public class GameEngine implements Observer {
 
@@ -59,5 +60,14 @@ public class GameEngine implements Observer {
 
     public Baba getPlayer() {
         return currentRoom.getPlayer();
+    }
+
+    public boolean canMoveTo(Point2D position) {
+        for (var obj : currentRoom.getObjects()) {
+            if (obj.getPosition().equals(position) && !obj.isTransposable()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
