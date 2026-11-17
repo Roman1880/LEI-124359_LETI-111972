@@ -47,7 +47,7 @@ public class RoomLoader {
                                 tiles.add(new CrackedWall(position));
                                 break;
                             case 'g': // Terra / Chão
-                                tiles.add(new Dirt(position));
+                                tiles.add(new Grass(position));
                                 break;
                             case ' ':
                                 // Espaço vazio, não adiciona tile

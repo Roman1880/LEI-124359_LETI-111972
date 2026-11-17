@@ -46,4 +46,6 @@ public interface ImageTile {
 	 * @return int.
 	 */
 	int getLayer();
+
+    boolean isTransposable();
 }
