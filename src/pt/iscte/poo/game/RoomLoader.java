@@ -24,6 +24,7 @@ public class RoomLoader {
         // Inicializar o mapa da grelha (Módulo de Coleções - Map)
         TILE_FACTORIES.put('X', Wall::new);
         TILE_FACTORIES.put('x', CrackedWall::new);
+        TILE_FACTORIES.put('g', Grass::new);
 
         // Inicializar o mapa de entidades
         ENTITY_FACTORIES.put("baba", Baba::new);
@@ -56,6 +57,8 @@ public class RoomLoader {
                     for (int x = 0; x < line.length(); x++) {
                         char c = line.charAt(x);
                         Point2D position = new Point2D(x, y);
+
+                        tiles.add(new Dirt(position));
 
                         Function<Point2D, ImageTile> factory = TILE_FACTORIES.get(c);
                         if (factory != null) {

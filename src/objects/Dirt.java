@@ -15,7 +15,7 @@ public class Dirt extends GameObject {
      */
 
     public Dirt(Point2D position) {
-        super(position, "dirt", 5);
+        super(position, "dirt", 1);
     }
 
     @Override
