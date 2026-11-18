@@ -1,7 +1,6 @@
 package objects;
 
 import pt.iscte.poo.utils.Point2D;
-import pt.iscte.poo.gui.ImageTile;
 
 /**
  * Representa uma parede normal intransponivel.

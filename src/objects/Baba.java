@@ -1,7 +1,6 @@
 package objects;
 
 import pt.iscte.poo.game.GameEngine;
-import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
