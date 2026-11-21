@@ -28,6 +28,14 @@ public class RoomLoader {
 
         // Inicializar o mapa de entidades
         ENTITY_FACTORIES.put("baba", Baba::new);
+        ENTITY_FACTORIES.put("rock", Rock::new);
+        ENTITY_FACTORIES.put("box", Box::new);
+        ENTITY_FACTORIES.put("flag", Flag::new);
+        ENTITY_FACTORIES.put("wordBox", WordBox::new);
+        ENTITY_FACTORIES.put("wordIs", WordIs::new);
+        ENTITY_FACTORIES.put("wordWin", WordWin::new);
+        ENTITY_FACTORIES.put("wordStop", WordStop::new);
+        ENTITY_FACTORIES.put("wordMove", WordMove::new);
     }
 
     public static List<ImageTile> loadRoom(String roomFileName) {
