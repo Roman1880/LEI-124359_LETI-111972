@@ -1,6 +1,8 @@
 package objects;
 
+import pt.iscte.poo.game.GameEngine;
 import pt.iscte.poo.gui.ImageTile;
+import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
 
@@ -85,5 +87,18 @@ public abstract class GameObject implements ImageTile {
 
     public boolean isTransposable() {
         return false;
+    }
+
+    /**
+     * Empurra o objeto na direcao indicada.
+     *
+     * @param d Direcao do movimento
+     */
+
+    public void push(Direction d) {
+        Point2D new_pos = getPosition().plus(d.asVector());
+        if (GameEngine.getInstance().canMoveTo(new_pos)) {
+            setPosition(new_pos);
+        }
     }
 }
