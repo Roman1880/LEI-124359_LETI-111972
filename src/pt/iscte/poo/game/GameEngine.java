@@ -18,39 +18,76 @@ import pt.iscte.poo.observer.Observer;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
+/**
+ * Motor principal do jogo (Singleton) que gere o ciclo de jogo,
+ * o movimento da personagem, as regras e a mudanca de niveis.
+ */
 public class GameEngine implements Observer {
 
     private static GameEngine INSTANCE = new GameEngine();
     private static final String ROOMS_DIRECTORY = "rooms";
 
     private Room currentRoom;
+    private int currentLevel = 0;
     private int lastTickProcessed = 0;
 
     // Guarda se a regra "BOX IS WIN" esta ativa no estado atual do tabuleiro
     private boolean boxIsWin = false;
 
-    // Impede continuar a processar jogadas depois de o jogador vencer o nivel
-    private boolean levelWon = false;
+    // Impede continuar a jogar depois de concluir todos os niveis
+    private boolean gameFinished = false;
 
+    /**
+     * Construtor privado do Singleton GameEngine.
+     * Carrega o primeiro nivel ao iniciar o jogo.
+     */
     private GameEngine() {
-        currentRoom = Room.readRoom(new File(ROOMS_DIRECTORY + "/room0.txt"));
-        // Avalia logo as regras no arranque para saber se BOX IS WIN ja comeca ativa
-        checkRules();
-        updateGUI();
+        loadLevel(currentLevel);
     }
 
+    /**
+     * Devolve a unica instancia de GameEngine.
+     *
+     * @return Instancia de GameEngine
+     */
     public static GameEngine getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Carrega o nivel correspondente ao indice indicado.
+     * Se nao existirem mais ficheiros de nivel, termina o jogo com vitoria.
+     *
+     * @param level Numero do nivel a carregar (ex: 0 para room0.txt)
+     */
+    private void loadLevel(int level) {
+        File roomFile = new File(ROOMS_DIRECTORY + "/room" + level + ".txt");
+        if (roomFile.exists()) {
+            currentRoom = Room.readRoom(roomFile);
+            checkRules();
+            updateGUI();
+            ImageGUI.getInstance().setStatusMessage("Nivel " + level);
+        } else {
+            gameFinished = true;
+            ImageGUI.getInstance().setStatusMessage("Parabens! Jogo concluido!");
+        }
+    }
+
+    /**
+     * Metodo chamado sempre que ocorre um evento na interface grafica (tecla ou tick).
+     *
+     * @param source Objeto observado que gerou a notificacao
+     */
     @Override
     public void update(Observed source) {
-
         if (ImageGUI.getInstance().wasKeyPressed()) {
             int k = ImageGUI.getInstance().keyPressed();
 
-            // So aceita setas de direcao enquanto o nivel ainda nao terminou em vitoria
-            if (!levelWon && (k == KeyEvent.VK_LEFT || k == KeyEvent.VK_RIGHT || k == KeyEvent.VK_UP || k == KeyEvent.VK_DOWN)) {
+            // Tecla R reinicia o nivel atual
+            if (!gameFinished && k == KeyEvent.VK_R) {
+                loadLevel(currentLevel);
+            } else if (!gameFinished && (k == KeyEvent.VK_LEFT || k == KeyEvent.VK_RIGHT
+                    || k == KeyEvent.VK_UP || k == KeyEvent.VK_DOWN)) {
                 Direction d = Direction.directionFor(k);
 
                 // 1. Tenta mover o Baba (e empurrar um Pushable se houver espaco valido)
@@ -59,13 +96,14 @@ public class GameEngine implements Observer {
                 // 2. Reavalia as regras da sala (ex: BOX IS WIN) apos o movimento
                 checkRules();
 
-                // 3. Verifica se o jogador atingiu uma condicao de vitoria
+                // 3. Verifica se o jogador venceu o nivel e avanca para o proximo
                 checkWinCondition();
 
                 // 4. Redesenha a interface com as novas posicoes dos objetos
                 updateGUI();
             }
         }
+
         int t = ImageGUI.getInstance().getTicks();
         while (lastTickProcessed < t) {
             processTick();
@@ -73,48 +111,54 @@ public class GameEngine implements Observer {
         ImageGUI.getInstance().update();
     }
 
+    /**
+     * Gere o movimento do jogador numa dada direcao, incluindo o empurrao
+     * de um objeto Pushable caso o espaco seguinte esteja livre.
+     *
+     * @param d Direcao do movimento
+     */
     private void handlePlayerMove(Direction d) {
         Baba player = getPlayer();
         if (player == null || currentRoom == null) {
             return;
         }
 
-        // Posicao imediatamente a frente do Baba na direcao escolhida
         Point2D nextPos = player.getPosition().plus(d.asVector());
 
-        // Nao deixa sair fora dos limites da grelha
+        // Nao permite sair dos limites da grelha
         if (!isInsideGrid(nextPos)) {
             return;
         }
 
-        // Verifica se existe algum objeto Pushable na celula seguinte
+        // Verifica se existe um objeto Pushable na celula seguinte
         Pushable pushableAtNext = findPushableAt(nextPos);
         if (pushableAtNext != null) {
-            // Posicao para onde o objeto empurrado iria parar
             Point2D beyondPos = nextPos.plus(d.asVector());
 
-            // So empurra se o destino estiver dentro da grelha, nao tiver outro Pushable
-            // e nao estiver bloqueado por um objeto nao transponivel
+            // So empurra se o destino estiver dentro da grelha, nao tiver outro Pushable e for transponivel
             if (!isInsideGrid(beyondPos) || hasPushableAt(beyondPos) || !canMoveTo(beyondPos)) {
                 return;
             }
 
-            // Empurra o objeto e depois avanca o Baba para a posicao anterior desse objeto
             pushableAtNext.push(d);
             player.move(d);
             return;
         }
 
-        // Se nao ha Pushable a frente, o Baba move-se apenas se a celula for transponivel
+        // Move o jogador se a celula de destino for transponivel
         if (canMoveTo(nextPos)) {
             player.move(d);
         }
     }
 
-    // Procura o primeiro objeto Pushable numa dada posicao
+    /**
+     * Procura um objeto que implemente Pushable numa determinada posicao.
+     *
+     * @param pos Posicao a verificar
+     * @return Objeto Pushable encontrado ou null se nao existir
+     */
     private Pushable findPushableAt(Point2D pos) {
         for (ImageTile tile : currentRoom.getObjects()) {
-            // Fazemos cast para GameObject porque ImageTile nao expoe getPosition()
             if (tile instanceof GameObject && tile instanceof Pushable) {
                 GameObject obj = (GameObject) tile;
                 if (obj.getPosition().equals(pos)) {
@@ -125,48 +169,51 @@ public class GameEngine implements Observer {
         return null;
     }
 
-    // Atalho booleano para saber se existe algum Pushable numa posicao
+    /**
+     * Indica se existe algum objeto Pushable na posicao especificada.
+     *
+     * @param pos Posicao a verificar
+     * @return true se existir um Pushable, false caso contrario
+     */
     private boolean hasPushableAt(Point2D pos) {
         return findPushableAt(pos) != null;
     }
 
-    // Garante que uma coordenada (x, y) esta dentro das dimensoes da grelha
+    /**
+     * Verifica se uma coordenada esta dentro dos limites atuais da grelha.
+     *
+     * @param pos Posicao a validar
+     * @return true se estiver dentro da grelha, false caso contrario
+     */
     private boolean isInsideGrid(Point2D pos) {
         int width = ImageGUI.getInstance().getGridDimension().width;
         int height = ImageGUI.getInstance().getGridDimension().height;
         return pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < width && pos.getY() < height;
     }
 
-    // Varre a grelha a procura da combinacao "BOX IS WIN" na horizontal e na vertical
+    /**
+     * Verifica as regras ativas procurando apenas pelos objetos WordIs
+     * e analisando os seus vizinhos imediatos na horizontal e na vertical.
+     */
     private void checkRules() {
         boxIsWin = false;
         if (currentRoom == null) {
             return;
         }
 
-        int width = ImageGUI.getInstance().getGridDimension().width;
-        int height = ImageGUI.getInstance().getGridDimension().height;
+        for (ImageTile tile : currentRoom.getObjects()) {
+            if (tile instanceof WordIs) {
+                Point2D isPos = ((GameObject) tile).getPosition();
 
-        // Verificacao horizontal: tres casas seguidas da esquerda para a direita (x, x+1, x+2)
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x <= width - 3; x++) {
-                if (isBoxIsWinSequence(
-                        new Point2D(x, y),
-                        new Point2D(x + 1, y),
-                        new Point2D(x + 2, y))) {
-                    boxIsWin = true;
-                    return;
-                }
-            }
-        }
+                // Horizontal: esquerda (BOX) e direita (WIN)
+                boolean horizontalRule = hasTypeAt(isPos.plus(Direction.LEFT.asVector()), WordBox.class)
+                        && hasTypeAt(isPos.plus(Direction.RIGHT.asVector()), WordWin.class);
 
-        // Verificacao vertical: tres casas seguidas de cima para baixo (y, y+1, y+2)
-        for (int y = 0; y <= height - 3; y++) {
-            for (int x = 0; x < width; x++) {
-                if (isBoxIsWinSequence(
-                        new Point2D(x, y),
-                        new Point2D(x, y + 1),
-                        new Point2D(x, y + 2))) {
+                // Vertical: cima (BOX) e baixo (WIN)
+                boolean verticalRule = hasTypeAt(isPos.plus(Direction.UP.asVector()), WordBox.class)
+                        && hasTypeAt(isPos.plus(Direction.DOWN.asVector()), WordWin.class);
+
+                if (horizontalRule || verticalRule) {
                     boxIsWin = true;
                     return;
                 }
@@ -174,14 +221,13 @@ public class GameEngine implements Observer {
         }
     }
 
-    // Confirma se p1 tem WordBox, p2 tem WordIs e p3 tem WordWin
-    private boolean isBoxIsWinSequence(Point2D p1, Point2D p2, Point2D p3) {
-        return hasTypeAt(p1, WordBox.class)
-                && hasTypeAt(p2, WordIs.class)
-                && hasTypeAt(p3, WordWin.class);
-    }
-
-    // Verifica se existe algum objeto de uma dada classe numa posicao especifica
+    /**
+     * Verifica se existe algum objeto de uma determinada classe numa posicao.
+     *
+     * @param pos Posicao a verificar
+     * @param clazz Classe do objeto procurado
+     * @return true se existir um objeto desse tipo na posicao, false caso contrario
+     */
     private boolean hasTypeAt(Point2D pos, Class<?> clazz) {
         for (ImageTile tile : currentRoom.getObjects()) {
             if (tile instanceof GameObject && clazz.isInstance(tile)) {
@@ -194,10 +240,13 @@ public class GameEngine implements Observer {
         return false;
     }
 
-    // Verifica se o Baba venceu o nivel: por tocar numa Flag ou numa Box quando BOX IS WIN esta ativo
+    /**
+     * Verifica se o jogador atingiu uma condicao de vitoria (Flag ou Box com BOX IS WIN)
+     * e avanca para o nivel seguinte.
+     */
     private void checkWinCondition() {
         Baba player = getPlayer();
-        if (player == null || levelWon) {
+        if (player == null || gameFinished) {
             return;
         }
 
@@ -206,15 +255,21 @@ public class GameEngine implements Observer {
         boolean onWinBox = boxIsWin && hasTypeAt(playerPos, Box.class);
 
         if (onFlag || onWinBox) {
-            levelWon = true;
-            ImageGUI.getInstance().setStatusMessage("Vitoria!");
+            currentLevel++;
+            loadLevel(currentLevel);
         }
     }
 
+    /**
+     * Avanca o contador interno de ticks processados.
+     */
     private void processTick() {
         lastTickProcessed++;
     }
 
+    /**
+     * Atualiza as imagens apresentadas na interface grafica com os objetos da sala atual.
+     */
     public void updateGUI() {
         if (currentRoom != null) {
             ImageGUI.getInstance().clearImages();
@@ -222,11 +277,21 @@ public class GameEngine implements Observer {
         }
     }
 
+    /**
+     * Devolve a instancia do jogador (Baba) da sala atual.
+     *
+     * @return Objeto Baba atual
+     */
     public Baba getPlayer() {
         return currentRoom.getPlayer();
     }
 
-    // Indica se uma posicao esta dentro da grelha e nao contem nenhum objeto bloqueante
+    /**
+     * Indica se uma posicao esta dentro da grelha e nao contem nenhum objeto bloqueante.
+     *
+     * @param position Posicao a verificar
+     * @return true se for possivel mover para a posicao, false caso contrario
+     */
     public boolean canMoveTo(Point2D position) {
         if (!isInsideGrid(position)) {
             return false;
