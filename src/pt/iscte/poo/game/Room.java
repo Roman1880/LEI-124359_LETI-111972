@@ -40,7 +40,7 @@ public class Room {
         // 1. Usar o RoomLoader para ler o ficheiro .txt correspondente (ex: room0.txt)
         List<ImageTile> tiles = RoomLoader.loadRoom(f.getName());
 
-        // 2. Adicionar os tiles à sala e detetar onde está o Baba para o definir como player
+        // 2. Adicionar os tiles a sala e detetar onde esta  o Baba para o definir como player
         for (ImageTile tile : tiles) {
             r.addObject(tile);
             if (tile instanceof Baba) {
