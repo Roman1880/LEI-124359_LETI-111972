@@ -3,14 +3,7 @@ package pt.iscte.poo.game;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-import objects.Baba;
-import objects.Box;
-import objects.Flag;
-import objects.GameObject;
-import objects.Pushable;
-import objects.WordBox;
-import objects.WordIs;
-import objects.WordWin;
+import objects.*;
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.observer.Observed;
@@ -23,19 +16,33 @@ import pt.iscte.poo.utils.Point2D;
  * o movimento da personagem, as regras e a mudanca de niveis.
  */
 public class GameEngine implements Observer {
-
-    private static GameEngine INSTANCE = new GameEngine();
     private static final String ROOMS_DIRECTORY = "rooms";
 
     private Room currentRoom;
     private int currentLevel = 0;
     private int lastTickProcessed = 0;
 
-    // Guarda se a regra "BOX IS WIN" esta ativa no estado atual do tabuleiro
-    private boolean boxIsWin = false;
-
     // Impede continuar a jogar depois de concluir todos os niveis
     private boolean gameFinished = false;
+
+    private static final Class<?>[] FIRST_WORDS = {
+        WordBox.class
+    };
+
+    private static final Class<?>[] LAST_WORDS = {
+        WordWin.class
+    };
+
+    private static final Class<?>[] WINNING_OBJECTS = {
+        Box.class
+    };
+
+    private static final Class<?>[] DEFAULT_WINNING_OBJECTS = {
+        Flag.class
+    };
+
+    private boolean[] activeWinningObjects = new boolean[FIRST_WORDS.length];
+    private static GameEngine INSTANCE = new GameEngine();
 
     /**
      * Construtor privado do Singleton GameEngine.
@@ -196,7 +203,7 @@ public class GameEngine implements Observer {
      * e analisando os seus vizinhos imediatos na horizontal e na vertical.
      */
     private void checkRules() {
-        boxIsWin = false;
+        activeWinningObjects = new boolean[FIRST_WORDS.length];
         if (currentRoom == null) {
             return;
         }
@@ -204,21 +211,42 @@ public class GameEngine implements Observer {
         for (ImageTile tile : currentRoom.getObjects()) {
             if (tile instanceof WordIs) {
                 Point2D isPos = ((GameObject) tile).getPosition();
+                checkRule(
+                        isPos.plus(Direction.LEFT.asVector()),
+                        isPos.plus(Direction.RIGHT.asVector()));
+                checkRule(
+                        isPos.plus(Direction.UP.asVector()),
+                        isPos.plus(Direction.DOWN.asVector()));
+            }
+        }
+    }
 
-                // Horizontal: esquerda (BOX) e direita (WIN)
-                boolean horizontalRule = hasTypeAt(isPos.plus(Direction.LEFT.asVector()), WordBox.class)
-                        && hasTypeAt(isPos.plus(Direction.RIGHT.asVector()), WordWin.class);
+    private void checkRule(Point2D nounPosition, Point2D propertyPosition) {
+        int nounIndex = getTypeIndexAt(nounPosition, FIRST_WORDS);
 
-                // Vertical: cima (BOX) e baixo (WIN)
-                boolean verticalRule = hasTypeAt(isPos.plus(Direction.UP.asVector()), WordBox.class)
-                        && hasTypeAt(isPos.plus(Direction.DOWN.asVector()), WordWin.class);
+        if (nounIndex >= 0 && getTypeIndexAt(propertyPosition, LAST_WORDS) >= 0) { //getTypeIndexAt(propertyPosition, new Class<?>[]{ WordWin.class })
+            activeWinningObjects[nounIndex] = true;
+        }
+    }
 
-                if (horizontalRule || verticalRule) {
-                    boxIsWin = true;
-                    return;
+    private int getTypeIndexAt(Point2D pos, Class<?>[] types) {
+        for (ImageTile tile : currentRoom.getObjects()) {
+            if (!(tile instanceof GameObject)) {
+                continue;
+            }
+
+            GameObject obj = (GameObject) tile;
+            if (!obj.getPosition().equals(pos)) {
+                continue;
+            }
+
+            for (int i = 0; i < types.length; i++) {
+                if (types[i].isInstance(obj)) {
+                    return i;
                 }
             }
         }
+        return -1;
     }
 
     /**
@@ -230,9 +258,9 @@ public class GameEngine implements Observer {
      */
     private boolean hasTypeAt(Point2D pos, Class<?> clazz) {
         for (ImageTile tile : currentRoom.getObjects()) {
-            if (tile instanceof GameObject && clazz.isInstance(tile)) {
+            if (tile instanceof GameObject) {
                 GameObject obj = (GameObject) tile;
-                if (obj.getPosition().equals(pos)) {
+                if (obj.getPosition().equals(pos) && clazz.isInstance(obj)) {
                     return true;
                 }
             }
@@ -251,13 +279,34 @@ public class GameEngine implements Observer {
         }
 
         Point2D playerPos = player.getPosition();
-        boolean onFlag = hasTypeAt(playerPos, Flag.class);
-        boolean onWinBox = boxIsWin && hasTypeAt(playerPos, Box.class);
+        boolean onDefaultWinningObject =
+                hasAnyTypeAt(playerPos, DEFAULT_WINNING_OBJECTS);
+        boolean onRuleWinningObject =
+                isOnActiveWinningObject(playerPos);
 
-        if (onFlag || onWinBox) {
+        if (onDefaultWinningObject || onRuleWinningObject) {
             currentLevel++;
             loadLevel(currentLevel);
         }
+    }
+
+    private boolean hasAnyTypeAt(Point2D pos, Class<?>[] types) {
+        for (Class<?> type : types) {
+            if (hasTypeAt(pos, type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOnActiveWinningObject(Point2D pos) {
+        for (int i = 0; i < activeWinningObjects.length; i++) {
+            if (activeWinningObjects[i]
+                    && hasTypeAt(pos, WINNING_OBJECTS[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
