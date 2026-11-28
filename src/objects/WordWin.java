@@ -3,10 +3,16 @@ package objects;
 import pt.iscte.poo.utils.Point2D;
 
 /**
- * Representa uma palavra WIN.
+ * Representa a palavra WIN no tabuleiro.
  */
-public class WordWin extends GameObject implements  Pushable{
-    public WordWin(Point2D p){
-        super(p, "word-win", 15);
+public class WordWin extends WordObject {
+
+    /**
+     * Construtor da palavra WIN.
+     *
+     * @param position Posicao inicial na grelha
+     */
+    public WordWin(Point2D position) {
+        super(position, "word-win");
     }
 }

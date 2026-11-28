@@ -25,12 +25,14 @@ public class RoomLoader {
         TILE_FACTORIES.put('X', Wall::new);
         TILE_FACTORIES.put('x', CrackedWall::new);
         TILE_FACTORIES.put('g', Grass::new);
+        TILE_FACTORIES.put(('H'), Hole::new);
 
         // Inicializar o mapa de entidades
         ENTITY_FACTORIES.put("baba", Baba::new);
         ENTITY_FACTORIES.put("rock", Rock::new);
         ENTITY_FACTORIES.put("box", Box::new);
         ENTITY_FACTORIES.put("flag", Flag::new);
+        ENTITY_FACTORIES.put(("bomb"), Bomb::new);
         ENTITY_FACTORIES.put("wordBox", WordBox::new);
         ENTITY_FACTORIES.put("wordIs", WordIs::new);
         ENTITY_FACTORIES.put("wordWin", WordWin::new);

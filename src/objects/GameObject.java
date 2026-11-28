@@ -89,16 +89,4 @@ public abstract class GameObject implements ImageTile {
         return false;
     }
 
-    /**
-     * Empurra o objeto na direcao indicada.
-     *
-     * @param d Direcao do movimento
-     */
-
-    public void push(Direction d) {
-        Point2D new_pos = getPosition().plus(d.asVector());
-        if (GameEngine.getInstance().canMoveTo(new_pos)) {
-            setPosition(new_pos);
-        }
-    }
 }
