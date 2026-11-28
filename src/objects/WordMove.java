@@ -3,10 +3,16 @@ package objects;
 import pt.iscte.poo.utils.Point2D;
 
 /**
- * Representa uma palavra MOVE.
+ * Representa a palavra MOVE no tabuleiro.
  */
-public class WordMove extends  GameObject implements Pushable{
-    public WordMove(Point2D p) {
-        super(p, "word-move", 15);
+public class WordMove extends WordObject {
+
+    /**
+     * Construtor da palavra MOVE.
+     *
+     * @param position Posicao inicial na grelha
+     */
+    public WordMove(Point2D position) {
+        super(position, "word-move");
     }
 }

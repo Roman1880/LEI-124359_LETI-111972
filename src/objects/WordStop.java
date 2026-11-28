@@ -3,10 +3,16 @@ package objects;
 import pt.iscte.poo.utils.Point2D;
 
 /**
- * Representa uma palavra STOP.
+ * Representa a palavra STOP no tabuleiro.
  */
-public class WordStop extends GameObject implements Pushable{
+public class WordStop extends WordObject {
+
+    /**
+     * Construtor da palavra STOP.
+     *
+     * @param position Posicao inicial na grelha
+     */
     public WordStop(Point2D position) {
-        super(position, "word-stop", 15);
+        super(position, "word-stop");
     }
 }

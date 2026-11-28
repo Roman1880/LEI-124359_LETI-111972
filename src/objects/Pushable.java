@@ -6,10 +6,25 @@ import pt.iscte.poo.utils.Direction;
  * Interface que identifica os objetos que podem ser empurrados pela personagem.
  */
 public interface Pushable {
+
     /**
-     * Empurra o objeto na direcao indicada.
+     * Indica se o objeto pode ser empurrado no estado atual do jogo.
+     *
+     * @return true se puder ser empurrado, false caso contrario
+     */
+    default boolean canBePushed() {
+        return true;
+    }
+
+    /**
+     * Empurra o objeto uma unidade na direcao indicada.
      *
      * @param d Direcao do movimento
      */
-    void push (Direction d);
+    default void push(Direction d) {
+        if (this instanceof GameObject) {
+            GameObject obj = (GameObject) this;
+            obj.setPosition(obj.getPosition().plus(d.asVector()));
+        }
+    }
 }
